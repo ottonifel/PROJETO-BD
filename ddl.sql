@@ -26,36 +26,42 @@ CREATE TABLE caixa(
 	
     FOREIGN KEY(CPF) REFERENCES funcionario(CPF)
 		ON UPDATE CASCADE
-    	ON DELETE CASCADE,
+    ON DELETE CASCADE,
+
     FOREIGN KEY(CPF_supervisor) REFERENCES caixa(CPF)
 		ON UPDATE CASCADE
-    	ON DELETE CASCADE
+    ON DELETE CASCADE
 );
 
 CREATE TABLE venda(
-    cod_nota_fiscal char(14) PRIMARY KEY,
-    data_compra date NOT NULL,
+    cod_nota_fiscal char(9) PRIMARY KEY CHECK(cod_nota_fiscal <> '000000000'),
+    dia smallint NOT NULL, 
+    mes smallint NOT NULL, 
+    ano smallint NOT NULL,
     CPF_cliente char(11) NOT NULL, 
     CPF_caixa char(11) NOT NULL,
 	
     FOREIGN KEY(CPF_cliente) REFERENCES cliente(CPF)
-		ON UPDATE CASCADE
-    	ON DELETE CASCADE,
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+
     FOREIGN KEY(CPF_caixa) REFERENCES caixa(CPF)
-		ON UPDATE CASCADE
-    	ON DELETE CASCADE
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 
 CREATE TABLE eh_comprado(
-    cod_nota_fiscal char(14),
-    codigo_barras char(14),
+    cod_nota_fiscal char(9),
+    codigo_barras char(13),
     quantidade smallint NOT NULL CHECK(quantidade > 0),
 	
     PRIMARY KEY(cod_nota_fiscal, codigo_barras),
+
     FOREIGN KEY(cod_nota_fiscal) REFERENCES venda(cod_nota_fiscal)
-		ON UPDATE CASCADE
-    	ON DELETE CASCADE,
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+
     FOREIGN KEY(codigo_barras) REFERENCES produto(codigo_barras)
-		ON UPDATE CASCADE
-    	ON DELETE CASCADE
-);
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);  

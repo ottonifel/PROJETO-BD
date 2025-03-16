@@ -1,17 +1,3 @@
---CREATE FUNCTION valida_CPF() RETURNS TRIGGER AS $$
---DECLARE
---  temp_cpf CHAR(11);
---BEGIN
---  temp_cpf := NEW.cpf;
---  temp_cpf := REGEXP_REPLACE(temp_cpf, '[^0-9]', '', 'g');
---  IF LENGTH(temp_cpf) <> 11 THEN
---    RAISE EXCEPTION 'O CPF deve conter apenas números';
---  END IF;
---  NEW.cpf := temp_cpf;
---  RETURN NEW;
---END;
---$$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION valida_CPF() RETURNS TRIGGER AS $$
 DECLARE
   temp_cpf CHAR(11);
@@ -92,5 +78,20 @@ BEFORE INSERT ON funcionario
 FOR EACH ROW
 EXECUTE FUNCTION valida_idade_funcionario();
 
+---------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION verifica_cliente_caixa()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.CPF_cliente = NEW.CPF_caixa THEN
+        RAISE EXCEPTION 'O cliente e o caixa não podem ser a mesma pessoa';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER verifica_cliente_caixa_trigger
+BEFORE INSERT OR UPDATE ON venda
+FOR EACH ROW
+EXECUTE FUNCTION verifica_cliente_caixa();
 
 
